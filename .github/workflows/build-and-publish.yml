@@ -7,7 +7,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -41,6 +41,31 @@ jobs:
           path: dist/pip-always-on-top@giuseppe.shell-extension.zip
           if-no-files-found: error
           retention-days: 90
+
+  release:
+    name: Create GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download extension artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: pip-always-on-top
+          path: dist
+
+      - name: Publish release with extension asset
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tag="build-${GITHUB_RUN_NUMBER}"
+          asset="dist/pip-always-on-top@giuseppe.shell-extension.zip"
+          gh release create "$tag" "$asset" \
+            --repo "$GITHUB_REPOSITORY" \
+            --target "$GITHUB_SHA" \
+            --title "GNOME PiP Always on Top $tag" \
+            --notes "Automated GNOME Shell extension build from commit $GITHUB_SHA." \
+            --prerelease
 
   publish:
     name: Publish to GNOME Extensions

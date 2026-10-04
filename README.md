@@ -55,7 +55,12 @@ The workflow in `.github/workflows/build-and-publish.yml` runs on every commit p
 2. compiles the gettext translations;
 3. builds and verifies the GNOME extension bundle;
 4. uploads the `.shell-extension.zip` as a downloadable GitHub Actions artifact;
-5. publishes the extension to [extensions.gnome.org](https://extensions.gnome.org/) when the publishing secrets are configured.
+5. creates a prerelease in the repository with the `.shell-extension.zip` attached;
+6. publishes the extension to [extensions.gnome.org](https://extensions.gnome.org/) when the publishing secrets are configured.
+
+### GNOME Extensions marketplace
+
+Open the [GNOME Extensions marketplace](https://extensions.gnome.org/) or [search for GNOME PiP Always on Top](https://extensions.gnome.org/#search=GNOME%20PiP%20Always%20on%20Top). GNOME assigns the final extension page URL after the first submission is reviewed.
 
 To enable publishing, configure these repository secrets:
 

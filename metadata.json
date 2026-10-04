@@ -3,7 +3,7 @@
   "name": "GNOME PiP Always on Top",
   "description": "Automatically keeps Picture-in-Picture windows above normal windows, visible on every workspace, and synchronized to one position and size.",
   "shell-version": ["45", "46", "47", "48", "49"],
-  "url": "https://github.com/giuseppe/gnome-pip-always-on-top",
+  "url": "https://github.com/Giuseppe-Compagnone/gnome-pip-always-on-top",
   "gettext-domain": "pip-always-on-top@giuseppe",
   "version": 1,
   "version-name": "1.0.0"
