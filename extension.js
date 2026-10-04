@@ -217,6 +217,10 @@ export default class PiPOnTopExtension {
             window.stick();
         }
 
+        // `above` definisce il livello; `raise` la porta in cima a quel
+        // livello, se il backend/compositor espone questa operazione.
+        window.raise?.();
+
         const current = getFrameGeometry(window);
         const target = state.geometry;
         if (current.x !== target.x || current.y !== target.y ||
