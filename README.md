@@ -10,10 +10,6 @@
 
 Keep browser Picture-in-Picture videos visible above your normal windows and available on every GNOME workspace.
 
-## About
-
-GNOME PiP Always on Top is a lightweight GNOME Shell extension for browser Picture-in-Picture windows. It keeps PiP videos above normal windows, makes them visible across all workspaces, and preserves their position and size while you move between workspaces.
-
 ## Features
 
 - Keeps PiP windows above normal windows.
