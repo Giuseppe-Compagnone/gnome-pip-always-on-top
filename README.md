@@ -59,9 +59,10 @@ The workflow in `.github/workflows/build-and-publish.yml` runs on every commit p
 
 To enable publishing, configure these repository secrets:
 
-- `GNOME_USERNAME`: your extensions.gnome.org account username;
-- `GNOME_PASSWORD`: your extensions.gnome.org account password;
-- `GNOME_ACCEPT_TOS`: set to `true` only after accepting the GNOME Extensions Developer Agreement for that account.
+- `GNOME_EXTENSIONS_USERNAME`: your extensions.gnome.org account username;
+- `GNOME_EXTENSIONS_PASSWORD`: your extensions.gnome.org account password.
+
+The workflow sends `accept-tos: true` to the publishing action. Make sure the account has already accepted the GNOME Extensions Developer Agreement before enabling the workflow.
 
 The publish step uses the community-maintained [`murar8/gnome-extensions-action`](https://github.com/murar8/gnome-extensions-action). Without these secrets, the build and artifact upload still run, while the market publish job is skipped.
 

@@ -54,15 +54,14 @@ jobs:
       - name: Check publishing configuration
         id: publishing
         env:
-          GNOME_USERNAME: ${{ secrets.GNOME_USERNAME }}
-          GNOME_PASSWORD: ${{ secrets.GNOME_PASSWORD }}
-          GNOME_ACCEPT_TOS: ${{ secrets.GNOME_ACCEPT_TOS }}
+          GNOME_EXTENSIONS_USERNAME: ${{ secrets.GNOME_EXTENSIONS_USERNAME }}
+          GNOME_EXTENSIONS_PASSWORD: ${{ secrets.GNOME_EXTENSIONS_PASSWORD }}
         run: |
-          if [[ -n "$GNOME_USERNAME" && -n "$GNOME_PASSWORD" && "$GNOME_ACCEPT_TOS" == "true" ]]; then
+          if [[ -n "$GNOME_EXTENSIONS_USERNAME" && -n "$GNOME_EXTENSIONS_PASSWORD" ]]; then
             echo "enabled=true" >> "$GITHUB_OUTPUT"
           else
             echo "enabled=false" >> "$GITHUB_OUTPUT"
-            echo "GNOME publishing skipped: configure GNOME_USERNAME, GNOME_PASSWORD, and GNOME_ACCEPT_TOS=true."
+            echo "GNOME publishing skipped: configure GNOME_EXTENSIONS_USERNAME and GNOME_EXTENSIONS_PASSWORD."
           fi
 
       - name: Package and publish extension
@@ -74,6 +73,6 @@ jobs:
           podir: po
           gettext-domain: pip-always-on-top@giuseppe
           force: true
-          username: ${{ secrets.GNOME_USERNAME }}
-          password: ${{ secrets.GNOME_PASSWORD }}
-          accept-tos: ${{ secrets.GNOME_ACCEPT_TOS }}
+          username: ${{ secrets.GNOME_EXTENSIONS_USERNAME }}
+          password: ${{ secrets.GNOME_EXTENSIONS_PASSWORD }}
+          accept-tos: true
