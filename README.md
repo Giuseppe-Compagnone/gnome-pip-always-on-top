@@ -5,10 +5,14 @@
 </p>
 
 <p align="center">
-  <a href="https://extensions.gnome.org/#search=GNOME%20PiP%20Always%20on%20Top">Install from GNOME Extensions</a>
+  <a href="https://extensions.gnome.org/extension/11141/gnome-pip-always-on-top/">Install from GNOME Extensions</a>
 </p>
 
 Keep browser Picture-in-Picture videos visible above your normal windows and available on every GNOME workspace.
+
+## About
+
+GNOME PiP Always on Top is a lightweight GNOME Shell extension for browser Picture-in-Picture windows. It keeps PiP videos above normal windows, makes them visible across all workspaces, and preserves their position and size while you move between workspaces.
 
 ## Features
 
@@ -21,7 +25,7 @@ Keep browser Picture-in-Picture videos visible above your normal windows and ava
 
 ## Install
 
-Install it from the [GNOME Extensions marketplace](https://extensions.gnome.org/#search=GNOME%20PiP%20Always%20on%20Top).
+Install it from the [GNOME Extensions marketplace](https://extensions.gnome.org/extension/11141/gnome-pip-always-on-top/).
 
 You can also download a package from the [GitHub Releases page](https://github.com/Giuseppe-Compagnone/gnome-pip-always-on-top/releases) and install it with the GNOME Extensions app or:
 
