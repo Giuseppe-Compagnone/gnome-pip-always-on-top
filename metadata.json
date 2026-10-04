@@ -1,0 +1,7 @@
+{
+  "uuid": "pip-ontop@giuseppe",
+  "name": "PiP On Top",
+  "description": "Mantiene le finestre Picture-in-Picture sempre sopra e visibili in tutti i workspace.",
+  "shell-version": ["45", "46", "47", "48", "49"],
+  "version": 1
+}
