@@ -1,0 +1,79 @@
+name: Build and publish GNOME extension
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build extension
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes gettext gnome-shell unzip
+
+      - name: Validate source
+        run: |
+          python3 -m json.tool metadata.json >/dev/null
+          node --check extension.js
+
+      - name: Build extension bundle
+        run: bash scripts/build-extension.sh
+
+      - name: Verify extension bundle
+        run: unzip -t dist/pip-always-on-top@giuseppe.shell-extension.zip
+
+      - name: Upload downloadable artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: pip-always-on-top
+          path: dist/pip-always-on-top@giuseppe.shell-extension.zip
+          if-no-files-found: error
+          retention-days: 90
+
+  publish:
+    name: Publish to GNOME Extensions
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Check publishing configuration
+        id: publishing
+        env:
+          GNOME_USERNAME: ${{ secrets.GNOME_USERNAME }}
+          GNOME_PASSWORD: ${{ secrets.GNOME_PASSWORD }}
+          GNOME_ACCEPT_TOS: ${{ secrets.GNOME_ACCEPT_TOS }}
+        run: |
+          if [[ -n "$GNOME_USERNAME" && -n "$GNOME_PASSWORD" && "$GNOME_ACCEPT_TOS" == "true" ]]; then
+            echo "enabled=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "enabled=false" >> "$GITHUB_OUTPUT"
+            echo "GNOME publishing skipped: configure GNOME_USERNAME, GNOME_PASSWORD, and GNOME_ACCEPT_TOS=true."
+          fi
+
+      - name: Package and publish extension
+        if: steps.publishing.outputs.enabled == 'true'
+        uses: murar8/gnome-extensions-action@0.1.1
+        with:
+          source-dir: .
+          output-dir: dist
+          podir: po
+          gettext-domain: pip-always-on-top@giuseppe
+          force: true
+          username: ${{ secrets.GNOME_USERNAME }}
+          password: ${{ secrets.GNOME_PASSWORD }}
+          accept-tos: ${{ secrets.GNOME_ACCEPT_TOS }}

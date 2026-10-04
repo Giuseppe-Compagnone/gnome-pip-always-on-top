@@ -1,0 +1,14 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: pip-always-on-top@giuseppe 1.0.0\n"
+"Language: ja\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "GNOME PiP Always on Top"
+msgstr "GNOME PiP 常に最前面"
+
+msgid "Automatically keeps Picture-in-Picture windows above normal windows, visible on every workspace, and synchronized to one position and size."
+msgstr "Picture-in-Picture ウィンドウを通常のウィンドウより前面に保ち、すべてのワークスペースで表示し、位置とサイズを統一します。"

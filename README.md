@@ -1,43 +1,81 @@
 # GNOME PiP Always on Top
 
-Estensione GNOME Shell che riconosce le finestre Picture-in-Picture dei browser e le mantiene:
+GNOME Shell extension that keeps browser Picture-in-Picture windows above normal windows, visible on every workspace, and synchronized to one position and size.
 
-- sempre sopra le normali finestre (`above` / always-on-top);
-- visibili in tutti i workspace (`sticky`);
-- nella stessa posizione e con la stessa dimensione mentre si cambia workspace.
+## Features
 
-## Installazione locale
+- Detects Picture-in-Picture windows from Firefox, Chromium, Chrome, Brave, Edge, Vivaldi, and Opera.
+- Keeps matching windows above normal windows using Mutter's `above` state.
+- Raises the PiP window within the always-on-top layer when the compositor permits it.
+- Makes the window sticky so it is visible on every workspace.
+- Preserves one position and size across workspace switches.
+- Restores the window's original `above` and workspace state when the extension is disabled.
+- Includes gettext translations for Italian, German, Spanish, French, Brazilian Portuguese, Russian, Simplified Chinese, Japanese, and Korean. English is the fallback language.
+
+## Requirements
+
+- GNOME Shell 45, 46, 47, 48, or 49.
+- A browser that exposes its Picture-in-Picture window through a recognizable title or window class.
+
+## Install locally
+
+From the repository root:
 
 ```bash
-mkdir -p ~/.local/share/gnome-shell/extensions/pip-always-on-top@giuseppe
-cp -a ./* ~/.local/share/gnome-shell/extensions/pip-always-on-top@giuseppe/
+sudo apt install gettext gnome-shell
+bash scripts/build-extension.sh
+gnome-extensions install --force dist/pip-always-on-top@giuseppe.shell-extension.zip
 gnome-extensions enable pip-always-on-top@giuseppe
 ```
 
-Per ricaricare l'estensione dopo una modifica:
+If GNOME Shell does not discover the extension immediately, log out and back in. On X11, restarting GNOME Shell with `Alt+F2`, then `r`, is also possible.
+
+## How detection works
+
+The extension periodically scans managed windows and checks their title and WM class for common Picture-in-Picture identifiers. It also listens for new windows, title changes, workspace switches, and geometry changes.
+
+GNOME and Mutter do not expose a numeric `z-index` to extensions. `make_above()` is the highest normal-window layer available to an extension, while `raise()` keeps the PiP window at the top of that layer when supported. System overlays, exclusive fullscreen surfaces, and compositor-owned UI can still take precedence.
+
+## Build
+
+Install the gettext compiler and GNOME Shell tools, then run:
 
 ```bash
-gnome-extensions disable pip-always-on-top@giuseppe
-gnome-extensions enable pip-always-on-top@giuseppe
+sudo apt install gettext gnome-shell
+bash scripts/build-extension.sh
 ```
 
-Su GNOME con sessione X11 può essere necessario riavviare GNOME Shell con `Alt+F2`, poi `r`.
-Con Wayland è sufficiente disabilitare e riabilitare l'estensione oppure disconnettersi e riconnettersi.
+The resulting package is written to `dist/pip-always-on-top@giuseppe.shell-extension.zip` and contains the compiled translations under `locale/`.
 
-## Rilevamento
+## GitHub Actions
 
-Il rilevamento è automatico e non richiede permessi esterni. L'estensione cerca nei titoli e nelle classi delle finestre gli identificatori normalmente usati da Firefox, Chromium, Chrome, Brave, Edge, Vivaldi e Opera.
+The workflow in `.github/workflows/build-and-publish.yml` runs on every commit pushed to `main` and can also be started manually. It:
 
-GNOME Shell non offre un vero indice numerico `z-index`: `make_above()` è il livello massimo esposto a un'estensione per una finestra normale. Finestre di sistema, overlay esclusivi e alcune superfici fullscreen possono comunque avere precedenza per decisione di Mutter o del compositore.
+1. validates the metadata and JavaScript;
+2. compiles the gettext translations;
+3. builds and verifies the GNOME extension bundle;
+4. uploads the `.shell-extension.zip` as a downloadable GitHub Actions artifact;
+5. publishes the extension to [extensions.gnome.org](https://extensions.gnome.org/) when the publishing secrets are configured.
 
-## Sviluppo
+To enable publishing, configure these repository secrets:
 
-Il progetto non ha dipendenze di runtime. Il controllo più semplice è:
+- `GNOME_USERNAME`: your extensions.gnome.org account username;
+- `GNOME_PASSWORD`: your extensions.gnome.org account password;
+- `GNOME_ACCEPT_TOS`: set to `true` only after accepting the GNOME Extensions Developer Agreement for that account.
+
+The publish step uses the community-maintained [`murar8/gnome-extensions-action`](https://github.com/murar8/gnome-extensions-action). Without these secrets, the build and artifact upload still run, while the market publish job is skipped.
+
+The `url` field in `metadata.json` points to the expected public GitHub repository URL. Update it if the repository is published under a different GitHub owner or organization.
+
+## Development checks
 
 ```bash
-python3 -m json.tool metadata.json
+python3 -m json.tool metadata.json >/dev/null
+node --check extension.js
+bash scripts/build-extension.sh
+unzip -t dist/pip-always-on-top@giuseppe.shell-extension.zip
 ```
 
-## Licenza
+## License
 
-MIT. Vedi [LICENSE](LICENSE).
+MIT. See [LICENSE](LICENSE).

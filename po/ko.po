@@ -1,0 +1,14 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: pip-always-on-top@giuseppe 1.0.0\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+
+msgid "GNOME PiP Always on Top"
+msgstr "GNOME PiP 항상 위에 표시"
+
+msgid "Automatically keeps Picture-in-Picture windows above normal windows, visible on every workspace, and synchronized to one position and size."
+msgstr "Picture-in-Picture 창을 일반 창보다 항상 위에 표시하고 모든 작업 공간에서 보이도록 하며 위치와 크기를 동기화합니다."

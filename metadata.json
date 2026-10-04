@@ -1,7 +1,10 @@
 {
   "uuid": "pip-always-on-top@giuseppe",
   "name": "GNOME PiP Always on Top",
-  "description": "Mantiene le finestre Picture-in-Picture sempre sopra e visibili in tutti i workspace.",
+  "description": "Automatically keeps Picture-in-Picture windows above normal windows, visible on every workspace, and synchronized to one position and size.",
   "shell-version": ["45", "46", "47", "48", "49"],
-  "version": 1
+  "url": "https://github.com/giuseppe/gnome-pip-always-on-top",
+  "gettext-domain": "pip-always-on-top@giuseppe",
+  "version": 1,
+  "version-name": "1.0.0"
 }
