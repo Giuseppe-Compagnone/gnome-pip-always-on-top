@@ -1,4 +1,4 @@
-# PiP On Top
+# GNOME PiP Always on Top
 
 Estensione GNOME Shell che riconosce le finestre Picture-in-Picture dei browser e le mantiene:
 
@@ -9,16 +9,16 @@ Estensione GNOME Shell che riconosce le finestre Picture-in-Picture dei browser 
 ## Installazione locale
 
 ```bash
-mkdir -p ~/.local/share/gnome-shell/extensions/pip-ontop@giuseppe
-cp -a ./* ~/.local/share/gnome-shell/extensions/pip-ontop@giuseppe/
-gnome-extensions enable pip-ontop@giuseppe
+mkdir -p ~/.local/share/gnome-shell/extensions/pip-always-on-top@giuseppe
+cp -a ./* ~/.local/share/gnome-shell/extensions/pip-always-on-top@giuseppe/
+gnome-extensions enable pip-always-on-top@giuseppe
 ```
 
 Per ricaricare l'estensione dopo una modifica:
 
 ```bash
-gnome-extensions disable pip-ontop@giuseppe
-gnome-extensions enable pip-ontop@giuseppe
+gnome-extensions disable pip-always-on-top@giuseppe
+gnome-extensions enable pip-always-on-top@giuseppe
 ```
 
 Su GNOME con sessione X11 può essere necessario riavviare GNOME Shell con `Alt+F2`, poi `r`.

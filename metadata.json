@@ -1,6 +1,6 @@
 {
-  "uuid": "pip-ontop@giuseppe",
-  "name": "PiP On Top",
+  "uuid": "pip-always-on-top@giuseppe",
+  "name": "GNOME PiP Always on Top",
   "description": "Mantiene le finestre Picture-in-Picture sempre sopra e visibili in tutti i workspace.",
   "shell-version": ["45", "46", "47", "48", "49"],
   "version": 1
