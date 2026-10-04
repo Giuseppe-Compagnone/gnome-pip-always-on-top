@@ -1,5 +1,13 @@
 # GNOME PiP Always on Top
 
+<p align="center">
+  <img src="assets/pip-workspaces.png" alt="GNOME PiP Always on Top icon" width="240">
+</p>
+
+<p align="center">
+  <a href="https://extensions.gnome.org/#search=GNOME%20PiP%20Always%20on%20Top">Install from GNOME Extensions</a>
+</p>
+
 Keep browser Picture-in-Picture videos visible above your normal windows and available on every GNOME workspace.
 
 ## Features
