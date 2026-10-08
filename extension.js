@@ -8,6 +8,7 @@
 
 import Meta from 'gi://Meta';
 import GLib from 'gi://GLib';
+import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 
 const SCAN_INTERVAL_SECONDS = 2;
 const REAPPLY_INTERVAL_SECONDS = 5;
@@ -31,12 +32,26 @@ const BROWSER_CLASSES = [
     'opera',
 ];
 
+const BROWSER_APP_IDS = [
+    'org.mozilla.firefox',
+    'com.google.chrome',
+    'org.chromium.chromium',
+    'com.brave.browser',
+    'com.microsoft.edge',
+    'com.vivaldi.vivaldi',
+    'com.operasoftware.opera',
+];
+
 function normalized(value) {
     return String(value ?? '').trim().toLowerCase();
 }
 
 function windowType(window) {
     return window.get_window_type?.() ?? window.window_type;
+}
+
+function isWindowAlive(window) {
+    return Boolean(window?.is_alive ?? true);
 }
 
 function isPictureInPicture(window) {
@@ -47,7 +62,9 @@ function isPictureInPicture(window) {
     const title = normalized(window.get_title?.());
     const wmClass = normalized(window.get_wm_class?.());
     const wmClassInstance = normalized(window.get_wm_class_instance?.());
-    const haystack = `${title} ${wmClass} ${wmClassInstance}`;
+    const gtkAppId = normalized(window.get_gtk_application_id?.());
+    const sandboxedAppId = normalized(window.get_sandboxed_app_id?.());
+    const haystack = `${title} ${wmClass} ${wmClassInstance} ${gtkAppId} ${sandboxedAppId}`;
 
     // I browser usano generalmente il titolo della finestra per il PiP.
     if (PIP_TOKENS.some(token => haystack.includes(token))) {
@@ -56,8 +73,9 @@ function isPictureInPicture(window) {
 
     // Fallback per alcune versioni di Chromium/Firefox che marcano il PiP
     // come dialogo senza mantenere "Picture-in-Picture" nel titolo.
-    const isBrowser = BROWSER_CLASSES.some(browserClass =>
-        wmClass === browserClass || wmClassInstance === browserClass);
+    const isBrowser = [...BROWSER_CLASSES, ...BROWSER_APP_IDS].some(browserId =>
+        wmClass === browserId || wmClassInstance === browserId ||
+        gtkAppId === browserId || sandboxedAppId === browserId);
     const isDialog = windowType(window) === Meta.WindowType.DIALOG;
     return isBrowser && isDialog && /\bpip\b|picture/.test(title);
 }
@@ -72,8 +90,9 @@ function getFrameGeometry(window) {
     };
 }
 
-export default class PiPOnTopExtension {
-    constructor() {
+export default class PiPOnTopExtension extends Extension {
+    constructor(metadata) {
+        super(metadata);
         this._signals = [];
         this._managed = new Map();
         this._scanSource = null;
@@ -123,17 +142,17 @@ export default class PiPOnTopExtension {
 
     disable() {
         if (this._scanSource !== null) {
-            GLib.source_remove(this._scanSource);
+            GLib.Source.remove(this._scanSource);
             this._scanSource = null;
         }
 
         if (this._reapplySource !== null) {
-            GLib.source_remove(this._reapplySource);
+            GLib.Source.remove(this._reapplySource);
             this._reapplySource = null;
         }
 
         for (const [window, state] of this._managed) {
-            this._disconnectWindow(window, state);
+            this._disconnectWindow(state);
             this._restoreWindowState(window, state);
         }
         this._managed.clear();
@@ -151,7 +170,7 @@ export default class PiPOnTopExtension {
     }
 
     _watchWindow(window) {
-        if (!window || window.is_destroyed?.()) {
+        if (!window || !isWindowAlive(window)) {
             return;
         }
 
@@ -190,7 +209,23 @@ export default class PiPOnTopExtension {
         ]);
         state.signals.push([
             window,
-            window.connect('unmanaged', () => this._managed.delete(window)),
+            window.connect('notify::above', () => {
+                if (!window.is_above?.()) {
+                    this._applyWindowState(window);
+                }
+            }),
+        ]);
+        state.signals.push([
+            window,
+            window.connect('notify::on-all-workspaces', () => {
+                if (!window.is_on_all_workspaces?.()) {
+                    this._applyWindowState(window);
+                }
+            }),
+        ]);
+        state.signals.push([
+            window,
+            window.connect('unmanaged', () => this._forgetWindow(window)),
         ]);
 
         this._applyWindowState(window);
@@ -198,14 +233,14 @@ export default class PiPOnTopExtension {
 
     _rememberGeometry(window) {
         const state = this._managed.get(window);
-        if (state && !window.is_destroyed?.()) {
+        if (state && isWindowAlive(window)) {
             state.geometry = getFrameGeometry(window);
         }
     }
 
     _applyWindowState(window) {
         const state = this._managed.get(window);
-        if (!state || window.is_destroyed?.()) {
+        if (!state || !isWindowAlive(window)) {
             return;
         }
 
@@ -218,8 +253,8 @@ export default class PiPOnTopExtension {
         }
 
         // `above` definisce il livello; `raise` la porta in cima a quel
-        // livello, se il backend/compositor espone questa operazione.
-        window.raise?.();
+        // livello.
+        window.raise();
 
         const current = getFrameGeometry(window);
         const target = state.geometry;
@@ -240,22 +275,29 @@ export default class PiPOnTopExtension {
         if (!state) {
             return;
         }
-        this._disconnectWindow(window, state);
+        this._disconnectWindow(state);
         this._restoreWindowState(window, state);
         this._managed.delete(window);
     }
 
-    _disconnectWindow(window, state) {
+    _forgetWindow(window) {
+        const state = this._managed.get(window);
+        if (!state) {
+            return;
+        }
+        this._disconnectWindow(state);
+        this._managed.delete(window);
+    }
+
+    _disconnectWindow(state) {
         for (const [object, id] of state.signals) {
-            if (!object.is_destroyed?.()) {
-                object.disconnect(id);
-            }
+            object.disconnect(id);
         }
         state.signals = [];
     }
 
     _restoreWindowState(window, state) {
-        if (window.is_destroyed?.()) {
+        if (!isWindowAlive(window)) {
             return;
         }
 
